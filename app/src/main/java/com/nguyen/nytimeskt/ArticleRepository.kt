@@ -5,15 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ArticleRepository @Inject constructor(val articleAPI: ArticleAPI) {
+class ArticleRepository @Inject constructor(private val articleAPI: ArticleAPI) {
     // val NYTIMES_BASE_URL = "https://api.nytimes.com/svc/search/v2/"
-    val TAG = "ArticleRepository"
+    companion object {
+        const val TAG = "ArticleRepository"
+    }
 
     /*init {
         val retrofit = Retrofit.Builder()
@@ -24,8 +24,7 @@ class ArticleRepository @Inject constructor(val articleAPI: ArticleAPI) {
     }*/
 
     fun fetchPage(query: String?, page: Int, beginDate: String?, filterQuery: String?, sort: String?, apiKey: String): LiveData<List<Article>> {
-        Log.d(TAG, "fetchPage: query: " + query + ", page: " + page + ", beginDate: " + beginDate + ", filterQuery: " + filterQuery + ", sort: " + sort
-        )
+        Log.d(TAG, "fetchPage: query: $query, page: $page, beginDate: $beginDate, filterQuery: $filterQuery, sort: $sort")
         val data = MutableLiveData<List<Article>>()
         articleAPI.fetchPage(query, page, beginDate, filterQuery, sort, apiKey)
             .enqueue(object : Callback<Json> {
@@ -39,7 +38,7 @@ class ArticleRepository @Inject constructor(val articleAPI: ArticleAPI) {
                     }
 
                     Log.d(TAG, "articles: " + articles.size)
-                    data.setValue(articles)
+                    data.value = articles
                 }
 
                 override fun onFailure(call: Call<Json>, t: Throwable) {

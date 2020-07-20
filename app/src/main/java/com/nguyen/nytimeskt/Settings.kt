@@ -37,9 +37,9 @@ class Settings @Inject constructor() : Serializable {
 
             val builder = StringBuilder()
             builder.append("news_desk:(")
-            builder.append(values.get(0))
+            builder.append(values[0])
             for (i in 1 until values.size) {
-                builder.append(" ").append(values.get(i))
+                builder.append(" ").append(values[i])
             }
             builder.append(")")
             return builder.toString()

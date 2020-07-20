@@ -9,30 +9,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.CompoundButton
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.nguyen.nytimeskt.DatePickerFragment.Companion.EXTRA_DAY_OBJECT
 import com.nguyen.nytimeskt.databinding.FragmentSettingsBinding
 
-class SettingsFragment() : DialogFragment() {
+class SettingsFragment : DialogFragment() {
     companion object {
-        val EXTRA_SETTINGS_OBJECT = "SETTINGS_OBJECT"
-        val TAG = "SettingsFragment"
-        val REQUEST_CODE_DATE = 31
+        const val EXTRA_SETTINGS_OBJECT = "SETTINGS_OBJECT"
+        const val TAG = "SettingsFragment"
+        const val REQUEST_CODE_DATE = 31
 
         fun newInstance(settings: Settings) : SettingsFragment {
             val fragment = SettingsFragment()
             val args = Bundle()
             args.putSerializable(EXTRA_SETTINGS_OBJECT, settings)
-            fragment.setArguments(args)
+            fragment.arguments = args
             return fragment
         }
     }
 
     lateinit var settings: Settings
-    lateinit var listener: DialogListener
-    lateinit var binding: FragmentSettingsBinding
+    private lateinit var listener: DialogListener
+    private lateinit var binding: FragmentSettingsBinding
 
     // interface used to pass a Settings object from this SettingsFragment to MainActivity
     interface DialogListener {
@@ -56,11 +55,11 @@ class SettingsFragment() : DialogFragment() {
         binding.beginDateText.requestFocus()
 
         // set up DatePicker dialog
-        binding.beginDateText.setOnClickListener(View.OnClickListener() {
+        binding.beginDateText.setOnClickListener {
             val datePicker = DatePickerFragment.newInstance(settings.beginDate)
             datePicker.setTargetFragment(this@SettingsFragment, REQUEST_CODE_DATE)
             datePicker.show(activity!!.supportFragmentManager, "DatePickerFragment")
-        })
+        }
 
         // set up "Sort Order"
         val adapter = ArrayAdapter.createFromResource(activity!!.applicationContext, R.array.sort_order_array, R.layout.item_spinner)
@@ -68,7 +67,7 @@ class SettingsFragment() : DialogFragment() {
         binding.sortOrderSpinner.adapter = adapter
         val position = adapter.getPosition(settings.sortOrder)
         binding.sortOrderSpinner.setSelection(position)
-        binding.sortOrderSpinner.setOnItemSelectedListener(object : AdapterView.OnItemSelectedListener {
+        binding.sortOrderSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 settings.sortOrder = if (position == 0) null else parent?.getItemAtPosition(position).toString()
             }
@@ -76,7 +75,7 @@ class SettingsFragment() : DialogFragment() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
-        })
+        }
 
         // set up "News Desk Values"
         binding.artsCheckBox.isChecked = settings.arts

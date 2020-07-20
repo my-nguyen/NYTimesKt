@@ -23,8 +23,8 @@ import javax.inject.Inject
  */
 class MainActivity : AppCompatActivity(), SettingsFragment.DialogListener {
     companion object {
-        val TAG = "MainActivity"
-        val NYTIMES_API_KEY = "GYWXJ04BtYKmLWLwGouVEON0y34KNYgh"
+        const val TAG = "MainActivity"
+        const val NYTIMES_API_KEY = "GYWXJ04BtYKmLWLwGouVEON0y34KNYgh"
     }
 
     @Inject
@@ -32,10 +32,10 @@ class MainActivity : AppCompatActivity(), SettingsFragment.DialogListener {
     @Inject
     lateinit var settings: Settings
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
 
-    val articles = mutableListOf<Article>()
-    val adapter = ArticleAdapter(articles, this)
+    private val articles = mutableListOf<Article>()
+    private val adapter = ArticleAdapter(articles, this)
     var page = 0
     var query: String? = null
 
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), SettingsFragment.DialogListener {
 
         // mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        binding.recyclerView.setAdapter(adapter)
+        binding.recyclerView.adapter = adapter
         binding.queryBox.requestFocus()
 
         binding.searchButton.setOnClickListener {
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), SettingsFragment.DialogListener {
         }
 
         val layoutManager = GridLayoutManager(this, 4)
-        binding.recyclerView.setLayoutManager(layoutManager)
+        binding.recyclerView.layoutManager = layoutManager
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity(), SettingsFragment.DialogListener {
     fun fetchPage() {
         mainViewModel.fetchPage(query, page, settings.getBeginDate(), settings.getFilterQuery(), settings.getOrder(), NYTIMES_API_KEY)
             .observe(this, Observer {
-                if (it.size == 0 || page == 0) {
+                if (it.isEmpty() || page == 0) {
                     val size = articles.size
                     // reset the adapter if this is a new query and the current dataset is not empty
                     if (size != 0) {
@@ -108,14 +108,14 @@ class MainActivity : AppCompatActivity(), SettingsFragment.DialogListener {
                         adapter.notifyItemRangeRemoved(0, size)
                     }
                 }
-                if (it.size != 0) {
+                if (it.isNotEmpty()) {
                     val size = articles.size
                     articles.addAll(it)
                     adapter.notifyItemRangeInserted(size, it.size)
                     // keep fetching on if current batch contains 10 articles
                     if (it.size == 10) {
                         page++
-                        Log.d(TAG, "fetchPage, page: " + page)
+                        Log.d(TAG, "fetchPage, page: $page")
                         if (page % 3 != 0) {
                             // each NYTimes API call returns 10 articles, and the device screen fits
                             // 3 times as many articles
@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity(), SettingsFragment.DialogListener {
             })
     }
 
-    fun hideKeyboard() {
+    private fun hideKeyboard() {
         val imm = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
         var view = currentFocus

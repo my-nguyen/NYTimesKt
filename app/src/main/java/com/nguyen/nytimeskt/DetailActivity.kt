@@ -14,7 +14,7 @@ import com.nguyen.nytimeskt.databinding.ActivityDetailBinding
 
 class DetailActivity : AppCompatActivity() {
     companion object {
-        val EXTRA_ARTICLE_OBJECT = "ARTICLE_OBJECT"
+        const val EXTRA_ARTICLE_OBJECT = "ARTICLE_OBJECT"
 
         fun newIntent(context: Context, article: Article) : Intent {
             val intent = Intent(context, DetailActivity::class.java)
@@ -23,14 +23,14 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    lateinit var binding: ActivityDetailBinding
+    private lateinit var binding: ActivityDetailBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_detail)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        var article = intent.getSerializableExtra(EXTRA_ARTICLE_OBJECT) as Article
+        val article = intent.getSerializableExtra(EXTRA_ARTICLE_OBJECT) as Article
         // set up to open WebView and not a browser
         binding.webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
@@ -47,7 +47,7 @@ class DetailActivity : AppCompatActivity() {
         val shareItem = menu?.findItem(R.id.action_share)
         val shareActionProvider = MenuItemCompat.getActionProvider(shareItem) as ShareActionProvider
         val shareIntent = Intent(Intent.ACTION_SEND)
-        shareIntent.setType("text/plain")
+        shareIntent.type = "text/plain"
         shareIntent.putExtra(Intent.EXTRA_TEXT, binding.webView.url)
         shareActionProvider.setShareIntent(shareIntent)
 

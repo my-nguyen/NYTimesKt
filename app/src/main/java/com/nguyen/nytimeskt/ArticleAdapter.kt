@@ -7,21 +7,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.nguyen.nytimeskt.databinding.ItemArticleBinding
-import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import java.lang.Exception
 
 class ArticleAdapter(val articles: List<Article>, val context: Context) :
     RecyclerView.Adapter<ArticleAdapter.ViewHolder>() {
 
-    inner class ViewHolder(val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+    inner class ViewHolder(private val binding: ItemArticleBinding) : RecyclerView.ViewHolder(binding.root), View.OnClickListener {
 
         init {
             binding.root.setOnClickListener(this)
         }
 
         override fun onClick(v: View) {
-            val article = articles.get(layoutPosition)
+            val article = articles[layoutPosition]
             val intent = DetailActivity.newIntent(context, article)
             context.startActivity(intent)
         }
@@ -33,7 +31,7 @@ class ArticleAdapter(val articles: List<Article>, val context: Context) :
                     .fit()
                     .into(binding.articleImage)
             }
-            binding.articleTitle.setText(article.headline)
+            binding.articleTitle.text = article.headline
         }
     }
 
@@ -45,7 +43,7 @@ class ArticleAdapter(val articles: List<Article>, val context: Context) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val article = articles.get(position)
+        val article = articles[position]
         holder.bind(article)
     }
 
